@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X, ExternalLink, Calendar, Languages, Loader } from 'lucide-react';
 import { translateText } from '../utils/translator';
+import { formatDate } from '../utils/dateFormatter';
 import './NewsDetailModal.css';
 
 const NewsDetailModal = ({ news, onClose }) => {
@@ -10,7 +11,7 @@ const NewsDetailModal = ({ news, onClose }) => {
 
   if (!news) return null;
 
-  const formattedDate = new Date(news.pubDate).toLocaleString('th-TH', {
+  const formattedDate = formatDate(news.pubDate, {
     dateStyle: 'full', timeStyle: 'short'
   });
 

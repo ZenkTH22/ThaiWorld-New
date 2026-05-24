@@ -1,13 +1,14 @@
 import React from 'react';
 import { Calendar } from 'lucide-react';
+import { formatDate } from '../utils/dateFormatter';
 import './NewsCard.css';
 
 const NewsCard = ({ news, onClick }) => {
   // Use regex to strip HTML tags for a clean summary
   const summary = news.description ? news.description.replace(/<[^>]+>/g, '').substring(0, 120) + '...' : '';
   
-  // Format precise date and time
-  const formattedDate = new Date(news.pubDate).toLocaleString('th-TH', {
+  // Format precise date and time safely across browsers
+  const formattedDate = formatDate(news.pubDate, {
     day: 'numeric',
     month: 'short',
     year: 'numeric',
