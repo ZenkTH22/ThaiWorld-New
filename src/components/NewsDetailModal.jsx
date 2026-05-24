@@ -35,9 +35,13 @@ const NewsDetailModal = ({ news, onClose }) => {
             className="modal-text" 
             dangerouslySetInnerHTML={{ __html: news.content || news.description }} 
           />
+
+          <div className="modal-notice">
+            * เนื่องจากข้อจำกัดของแหล่งข่าว เนื้อหาด้านบนจึงเป็นเพียงบทสรุปเบื้องต้น
+          </div>
           
           <a href={news.link} target="_blank" rel="noopener noreferrer" className="read-original-btn">
-            อ่านต้นฉบับ <ExternalLink size={16} />
+            คลิกอ่านข่าวฉบับเต็มที่นี่ <ExternalLink size={18} />
           </a>
         </div>
       </div>

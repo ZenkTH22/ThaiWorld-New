@@ -92,22 +92,30 @@
   margin: 10px 0;
 }
 
+.modal-notice {
+  font-size: 13px;
+  color: var(--accent-orange);
+  margin-top: -10px;
+  font-style: italic;
+}
+
 .read-original-btn {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   background: var(--accent-cyan);
   color: var(--text-inverse);
-  padding: 12px 24px;
+  padding: 16px 32px;
   border-radius: 30px;
   text-decoration: none;
-  font-weight: 600;
+  font-weight: 700;
+  font-size: 16px;
   align-self: flex-start;
-  margin-top: 20px;
+  margin-top: 10px;
   transition: all var(--transition-fast);
 }
 
 .read-original-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(0, 240, 255, 0.4);
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 10px 25px rgba(0, 240, 255, 0.4);
 }
