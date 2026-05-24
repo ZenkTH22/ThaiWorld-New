@@ -3,6 +3,7 @@ import NewsCard from './NewsCard';
 import NewsDetailModal from './NewsDetailModal';
 import ErrorBoundary from './ErrorBoundary';
 import { detectCategory } from '../utils/categoryHelper';
+import { RefreshCw, TrendingUp, Globe2, Newspaper } from 'lucide-react';
 import './Dashboard.css';
 
 const Dashboard = ({ searchQuery, selectedCategory, thaiNews, globalNews, loading, lastUpdated, refresh }) => {
@@ -10,64 +11,112 @@ const Dashboard = ({ searchQuery, selectedCategory, thaiNews, globalNews, loadin
 
   const filterNews = (newsList) => {
     return newsList.filter(news => {
-      // Filter by Search Query
       const matchesSearch = news.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
                             (news.description && news.description.toLowerCase().includes(searchQuery.toLowerCase()));
-      
-      // Filter by Category using smart detection
       const newsCat = detectCategory(news);
       const matchesCategory = selectedCategory === 'ทั้งหมด' || newsCat === selectedCategory;
-                              
       return matchesSearch && matchesCategory;
     });
   };
 
   const filteredThai = filterNews(thaiNews);
   const filteredGlobal = filterNews(globalNews);
+  const totalNews = thaiNews.length + globalNews.length;
 
   return (
-    <main className="dashboard">
-      <div className="dashboard-meta">
-        <p className="last-updated">
-          อัปเดตล่าสุด: {lastUpdated.toLocaleTimeString('th-TH')}
-          {loading && <span className="loading-spinner">กำลังโหลด...</span>}
-        </p>
-        <button className="refresh-btn" onClick={refresh}>🔄 รีเฟรช</button>
+    <main className="dashboard protected-content">
+      {/* ═══ Stats Bar ═══ */}
+      <div className="stats-bar">
+        <div className="stat-chip">
+          <Newspaper size={14} />
+          <span>ข่าวทั้งหมด <strong>{totalNews}</strong></span>
+        </div>
+        <div className="stat-chip">
+          <TrendingUp size={14} />
+          <span>ข่าวไทย <strong>{thaiNews.length}</strong></span>
+        </div>
+        <div className="stat-chip">
+          <Globe2 size={14} />
+          <span>ข่าวต่างประเทศ <strong>{globalNews.length}</strong></span>
+        </div>
+        
+        <div className="stats-right">
+          <span className="last-updated-text">
+            <span className="live-dot"></span>
+            อัปเดตล่าสุด {lastUpdated.toLocaleTimeString('th-TH')}
+          </span>
+          <button className={`refresh-btn ${loading ? 'spinning' : ''}`} onClick={refresh} disabled={loading}>
+            <RefreshCw size={14} />
+          </button>
+        </div>
       </div>
 
+      {/* ═══ News Columns ═══ */}
       <div className="dashboard-columns">
-        {/* Left Column: Thailand News */}
-        <section className="news-column th-column">
-          <div className="column-header">
-            <div className="flag-icon">🇹🇭</div>
-            <h2 className="column-title">ข่าวเด่นประเทศไทย</h2>
+        {/* Thai News */}
+        <section className="news-section">
+          <div className="section-header">
+            <div className="section-title-group">
+              <span className="section-flag">🇹🇭</span>
+              <div>
+                <h2 className="section-title">ข่าวเด่นประเทศไทย</h2>
+                <p className="section-subtitle">{filteredThai.length} รายการ</p>
+              </div>
+            </div>
           </div>
           
-          <div className="news-feed">
-            {filteredThai.length > 0 ? (
+          <div className="news-grid">
+            {loading && thaiNews.length === 0 ? (
+              Array(4).fill(0).map((_, i) => (
+                <div key={i} className="skeleton-card">
+                  <div className="skeleton skeleton-img"></div>
+                  <div className="skeleton-body">
+                    <div className="skeleton skeleton-badge"></div>
+                    <div className="skeleton skeleton-title"></div>
+                    <div className="skeleton skeleton-text"></div>
+                  </div>
+                </div>
+              ))
+            ) : filteredThai.length > 0 ? (
               filteredThai.map((news, idx) => (
-                <NewsCard key={idx} news={news} onClick={() => setSelectedNews(news)} />
+                <NewsCard key={`th-${idx}`} news={news} onClick={() => setSelectedNews(news)} />
               ))
             ) : (
-              <p className="no-news">ไม่มีข่าวที่ตรงกับการค้นหา</p>
+              <p className="no-news">ไม่พบข่าวที่ตรงกับการค้นหา</p>
             )}
           </div>
         </section>
 
-        {/* Right Column: Global News */}
-        <section className="news-column global-column">
-          <div className="column-header">
-            <div className="flag-icon">🌐</div>
-            <h2 className="column-title">ข่าวเด่นต่างประเทศ</h2>
+        {/* Global News */}
+        <section className="news-section">
+          <div className="section-header">
+            <div className="section-title-group">
+              <span className="section-flag">🌐</span>
+              <div>
+                <h2 className="section-title">ข่าวเด่นต่างประเทศ</h2>
+                <p className="section-subtitle">{filteredGlobal.length} รายการ</p>
+              </div>
+            </div>
           </div>
           
-          <div className="news-feed">
-            {filteredGlobal.length > 0 ? (
+          <div className="news-grid">
+            {loading && globalNews.length === 0 ? (
+              Array(4).fill(0).map((_, i) => (
+                <div key={i} className="skeleton-card">
+                  <div className="skeleton skeleton-img"></div>
+                  <div className="skeleton-body">
+                    <div className="skeleton skeleton-badge"></div>
+                    <div className="skeleton skeleton-title"></div>
+                    <div className="skeleton skeleton-text"></div>
+                  </div>
+                </div>
+              ))
+            ) : filteredGlobal.length > 0 ? (
               filteredGlobal.map((news, idx) => (
-                <NewsCard key={idx} news={news} onClick={() => setSelectedNews(news)} />
+                <NewsCard key={`gl-${idx}`} news={news} onClick={() => setSelectedNews(news)} />
               ))
             ) : (
-              <p className="no-news">ไม่มีข่าวที่ตรงกับการค้นหา</p>
+              <p className="no-news">ไม่พบข่าวที่ตรงกับการค้นหา</p>
             )}
           </div>
         </section>

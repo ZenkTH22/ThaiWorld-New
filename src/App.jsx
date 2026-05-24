@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
 import NewsTicker from './components/NewsTicker';
 import Dashboard from './components/Dashboard';
 import { useNewsService } from './hooks/useNewsService';
+import { initAntiScrape } from './utils/antiScrape';
 import './App.css';
 
 function App() {
@@ -10,6 +11,11 @@ function App() {
   const [selectedCategory, setSelectedCategory] = useState('ทั้งหมด');
   
   const { thaiNews, globalNews, loading, lastUpdated, refresh } = useNewsService();
+
+  // Initialize anti-scraping protection
+  useEffect(() => {
+    initAntiScrape();
+  }, []);
 
   // Get top 5 breaking news for the ticker (mixing Thai and Global)
   const breakingNews = [...thaiNews.slice(0, 3), ...globalNews.slice(0, 2)]
@@ -45,7 +51,11 @@ function App() {
       />
       
       <footer className="app-footer">
-        <p>ดึงข้อมูลข่าวสารจริงผ่าน RSS Feeds สาธารณะ (อัปเดตอัตโนมัติทุก 1 นาที)</p>
+        <p>
+          <span className="live-dot"></span>
+          ดึงข้อมูลข่าวสารจริงผ่าน RSS Feeds สาธารณะ — อัปเดตอัตโนมัติทุก 1 นาที
+        </p>
+        <p style={{marginTop: '8px', fontSize: '11px'}}>🛡️ Protected by Anti-Scrape System v2.0</p>
       </footer>
     </div>
   );

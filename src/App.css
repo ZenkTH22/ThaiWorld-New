@@ -1,15 +1,12 @@
 .app-container {
   min-height: 100vh;
   position: relative;
-  z-index: 1;
 }
 
+/* Subtle animated gradient orbs */
 .ambient-background {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
+  inset: 0;
   z-index: -1;
   overflow: hidden;
   pointer-events: none;
@@ -19,31 +16,41 @@
 .ambient-background::after {
   content: '';
   position: absolute;
-  width: 600px;
-  height: 600px;
   border-radius: 50%;
-  filter: blur(100px);
-  opacity: 0.15;
-  animation: float 20s infinite alternate ease-in-out;
+  filter: blur(120px);
+  opacity: 0.08;
 }
 
 .ambient-background::before {
-  background: var(--accent-cyan);
-  top: -100px;
-  left: -100px;
+  width: 500px;
+  height: 500px;
+  background: var(--accent-primary);
+  top: -15%;
+  left: -5%;
+  animation: float 25s ease-in-out infinite;
 }
 
 .ambient-background::after {
+  width: 400px;
+  height: 400px;
   background: var(--accent-purple);
-  bottom: -100px;
-  right: -100px;
-  animation-delay: -10s;
+  bottom: -10%;
+  right: -5%;
+  animation: float 20s ease-in-out infinite reverse;
 }
 
 .app-footer {
   text-align: center;
-  padding: 40px 20px;
-  color: var(--text-secondary);
-  font-size: 14px;
-  opacity: 0.6;
+  padding: 48px 20px;
+  color: var(--text-muted);
+  font-size: 13px;
+  border-top: 1px solid var(--glass-border);
+  margin-top: 60px;
+}
+
+.app-footer p {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }

@@ -4,11 +4,19 @@ import { formatDate } from '../utils/dateFormatter';
 import { detectCategory } from '../utils/categoryHelper';
 import './NewsCard.css';
 
+const CATEGORY_BADGE_MAP = {
+  'การเมือง': 'badge-purple',
+  'เศรษฐกิจ': 'badge-green',
+  'ต่างประเทศ': 'badge-cyan',
+  'เทคโนโลยี': 'badge-pink',
+  'กีฬา': 'badge-orange',
+  'บันเทิง': 'badge-red',
+  'ข่าวทั่วไป': 'badge-cyan',
+};
+
 const NewsCard = ({ news, onClick }) => {
-  // Use regex to strip HTML tags for a clean summary
-  const summary = news.description ? news.description.replace(/<[^>]+>/g, '').substring(0, 120) + '...' : '';
+  const summary = news.description ? news.description.replace(/<[^>]+>/g, '').substring(0, 100) + '...' : '';
   
-  // Format precise date and time safely across browsers
   const formattedDate = formatDate(news.pubDate, {
     day: 'numeric',
     month: 'short',
@@ -17,30 +25,30 @@ const NewsCard = ({ news, onClick }) => {
     minute: '2-digit'
   });
 
-  // Fallback image if news doesn't provide one
   const thumbnail = news.thumbnail || news.enclosure?.link || 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&w=800&auto=format&fit=crop';
   
   const categoryLabel = detectCategory(news);
+  const badgeClass = CATEGORY_BADGE_MAP[categoryLabel] || 'badge-cyan';
 
   return (
-    <div className="news-card glass-panel" onClick={onClick}>
+    <article className="news-card protected-content" onClick={onClick}>
       <div className="news-card-image">
-        <img src={thumbnail} alt={news.title} loading="lazy" />
+        <img src={thumbnail} alt="" loading="lazy" draggable="false" />
+        <div className="card-image-overlay"></div>
+        <span className={`card-badge badge ${badgeClass}`}>
+          {categoryLabel}
+        </span>
       </div>
-      <div className="news-card-content">
-        <div className="news-card-header">
-          <span className="news-category text-cyan">
-            {categoryLabel}
-          </span>
-          <span className="news-time">
+      <div className="news-card-body">
+        <h3 className="news-card-title">{news.title}</h3>
+        {summary && <p className="news-card-excerpt">{summary}</p>}
+        <div className="news-card-footer">
+          <span className="news-card-time">
             <Calendar size={12} /> {formattedDate}
           </span>
         </div>
-        
-        <h3 className="news-title">{news.title}</h3>
-        {summary && <p className="news-summary">{summary}</p>}
       </div>
-    </div>
+    </article>
   );
 };
 
