@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import NewsCard from './NewsCard';
 import NewsDetailModal from './NewsDetailModal';
+import ErrorBoundary from './ErrorBoundary';
 import { detectCategory } from '../utils/categoryHelper';
 import './Dashboard.css';
 
@@ -73,7 +74,9 @@ const Dashboard = ({ searchQuery, selectedCategory, thaiNews, globalNews, loadin
       </div>
 
       {selectedNews && (
-        <NewsDetailModal news={selectedNews} onClose={() => setSelectedNews(null)} />
+        <ErrorBoundary>
+          <NewsDetailModal news={selectedNews} onClose={() => setSelectedNews(null)} />
+        </ErrorBoundary>
       )}
     </main>
   );
