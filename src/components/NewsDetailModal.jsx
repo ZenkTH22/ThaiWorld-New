@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { X, ExternalLink, Calendar, Languages, Loader } from 'lucide-react';
 import { translateText } from '../utils/translator';
 import { formatDate } from '../utils/dateFormatter';
@@ -37,7 +38,7 @@ const NewsDetailModal = ({ news, onClose }) => {
   
   const categoryLabel = detectCategory(news);
 
-  return (
+  return createPortal(
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content glass-panel" onClick={e => e.stopPropagation()}>
         <button className="close-btn" onClick={onClose}>
@@ -84,7 +85,8 @@ const NewsDetailModal = ({ news, onClose }) => {
           </a>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 
