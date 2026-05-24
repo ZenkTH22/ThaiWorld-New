@@ -1,0 +1,49 @@
+.app-container {
+  min-height: 100vh;
+  position: relative;
+  z-index: 1;
+}
+
+.ambient-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.ambient-background::before,
+.ambient-background::after {
+  content: '';
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: 0.15;
+  animation: float 20s infinite alternate ease-in-out;
+}
+
+.ambient-background::before {
+  background: var(--accent-cyan);
+  top: -100px;
+  left: -100px;
+}
+
+.ambient-background::after {
+  background: var(--accent-purple);
+  bottom: -100px;
+  right: -100px;
+  animation-delay: -10s;
+}
+
+.app-footer {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-secondary);
+  font-size: 14px;
+  opacity: 0.6;
+}
