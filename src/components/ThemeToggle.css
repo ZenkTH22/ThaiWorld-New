@@ -1,0 +1,26 @@
+.theme-toggle {
+  background: var(--bg-input);
+  border: 1px solid var(--glass-border);
+  color: var(--text-primary);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+}
+
+.theme-toggle:hover {
+  background: var(--bg-card-hover);
+  transform: rotate(15deg);
+}
+
+.icon-sun {
+  color: #ffb703;
+}
+
+.icon-moon {
+  color: #8a2be2;
+}

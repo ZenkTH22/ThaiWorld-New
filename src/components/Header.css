@@ -2,20 +2,20 @@
   position: sticky;
   top: 20px;
   margin: 0 20px;
-  padding: 16px 32px;
+  padding: 20px 32px;
   z-index: 100;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  gap: 20px;
   border-radius: 20px;
   animation: fadeIn var(--transition-normal);
 }
 
-.header-content {
-  width: 100%;
-  max-width: 1400px;
+.header-top {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  width: 100%;
 }
 
 .logo {
@@ -40,28 +40,88 @@
   font-weight: 300;
 }
 
-.live-status {
+.header-actions {
   display: flex;
   align-items: center;
-  gap: 10px;
-  background: rgba(0, 240, 255, 0.1);
+  gap: 16px;
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  background: var(--bg-input);
+  border: 1px solid var(--glass-border);
   padding: 8px 16px;
   border-radius: 30px;
-  border: 1px solid rgba(0, 240, 255, 0.2);
+  gap: 10px;
+  transition: all var(--transition-fast);
 }
 
-.pulse-dot {
-  width: 10px;
-  height: 10px;
-  background-color: var(--accent-cyan);
-  border-radius: 50%;
-  box-shadow: 0 0 0 0 rgba(0, 240, 255, 0.4);
-  animation: pulse-glow 2s infinite cubic-bezier(0.66, 0, 0, 1);
+.search-bar:focus-within {
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
 }
 
-.live-text {
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 1.5px;
-  color: var(--accent-cyan);
+.search-icon {
+  color: var(--text-secondary);
+}
+
+.search-bar input {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 14px;
+  width: 200px;
+}
+
+.header-bottom {
+  border-top: 1px solid var(--glass-border);
+  padding-top: 16px;
+}
+
+.categories-nav {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.categories-nav::-webkit-scrollbar {
+  height: 4px;
+}
+
+.category-btn {
+  background: transparent;
+  border: 1px solid var(--glass-border);
+  color: var(--text-secondary);
+  padding: 6px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: inherit;
+  font-size: 14px;
+  transition: all var(--transition-fast);
+}
+
+.category-btn:hover {
+  border-color: var(--text-secondary);
+  color: var(--text-primary);
+}
+
+.category-btn.active {
+  background: var(--text-primary);
+  color: var(--bg-main);
+  border-color: var(--text-primary);
+}
+
+@media (max-width: 768px) {
+  .header-top {
+    flex-direction: column;
+    gap: 16px;
+  }
+  .search-bar input {
+    width: 100%;
+  }
 }

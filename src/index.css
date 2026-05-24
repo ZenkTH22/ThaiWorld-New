@@ -1,13 +1,19 @@
 @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap');
 
 :root {
-  /* Color Palette */
-  --bg-dark: #070913;
+  /* Default Dark Mode Theme */
+  --bg-main: #070913;
   --bg-card: rgba(20, 24, 44, 0.6);
   --bg-card-hover: rgba(30, 36, 64, 0.8);
+  --bg-input: rgba(255, 255, 255, 0.05);
+  --bg-modal: rgba(10, 12, 25, 0.95);
   
   --text-primary: #ffffff;
   --text-secondary: #8b92b2;
+  --text-inverse: #000000;
+  
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
   
   --accent-cyan: #00f0ff;
   --accent-purple: #8a2be2;
@@ -15,17 +21,31 @@
   --accent-green: #00ff88;
   --accent-orange: #ff6b00;
   
-  /* Glassmorphism */
-  --glass-border: rgba(255, 255, 255, 0.08);
-  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
   --backdrop-blur: blur(12px);
-  
-  /* Fonts */
   --font-main: 'Prompt', sans-serif;
-  
-  /* Transitions */
   --transition-fast: 0.2s ease;
   --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme='light'] {
+  --bg-main: #f5f7fa;
+  --bg-card: rgba(255, 255, 255, 0.7);
+  --bg-card-hover: rgba(255, 255, 255, 0.95);
+  --bg-input: rgba(0, 0, 0, 0.05);
+  --bg-modal: rgba(255, 255, 255, 0.95);
+  
+  --text-primary: #1a1c29;
+  --text-secondary: #5a627d;
+  --text-inverse: #ffffff;
+  
+  --glass-border: rgba(0, 0, 0, 0.08);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05);
+  
+  --accent-cyan: #0088ff;
+  --accent-purple: #6a0dad;
+  --accent-pink: #e60073;
+  --accent-green: #00b359;
+  --accent-orange: #ff5500;
 }
 
 * {
@@ -36,32 +56,29 @@
 
 body {
   font-family: var(--font-main);
-  background-color: var(--bg-dark);
+  background-color: var(--bg-main);
   color: var(--text-primary);
   min-height: 100vh;
   overflow-x: hidden;
+  transition: background-color var(--transition-normal), color var(--transition-normal);
+}
+
+/* Optional Background Gradient that adapts */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
   background-image: 
-    radial-gradient(circle at 15% 50%, rgba(138, 43, 226, 0.08), transparent 25%),
-    radial-gradient(circle at 85% 30%, rgba(0, 240, 255, 0.08), transparent 25%);
-  background-attachment: fixed;
+    radial-gradient(circle at 15% 50%, rgba(138, 43, 226, 0.05), transparent 25%),
+    radial-gradient(circle at 85% 30%, rgba(0, 240, 255, 0.05), transparent 25%);
+  z-index: -1;
+  pointer-events: none;
 }
 
-/* Scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-}
-::-webkit-scrollbar-track {
-  background: var(--bg-dark);
-}
-::-webkit-scrollbar-thumb {
-  background: #2a3155;
-  border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #3d477a;
-}
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--text-secondary); border-radius: 4px; opacity: 0.5; }
 
-/* Utilities */
 .glass-panel {
   background: var(--bg-card);
   backdrop-filter: var(--backdrop-blur);
@@ -69,6 +86,12 @@ body {
   border: 1px solid var(--glass-border);
   box-shadow: var(--glass-shadow);
   border-radius: 16px;
+  transition: all var(--transition-normal);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes pulse-glow {
@@ -77,13 +100,14 @@ body {
   100% { box-shadow: 0 0 0 0 rgba(0, 240, 255, 0); }
 }
 
-@keyframes float {
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-5px); }
-  100% { transform: translateY(0px); }
-}
+.text-cyan { color: var(--accent-cyan); }
+.text-purple { color: var(--accent-purple); }
+.text-pink { color: var(--accent-pink); }
+.text-green { color: var(--accent-green); }
+.text-orange { color: var(--accent-orange); }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+.bg-cyan { background-color: var(--accent-cyan); color: var(--text-inverse); }
+.bg-purple { background-color: var(--accent-purple); color: var(--text-inverse); }
+.bg-pink { background-color: var(--accent-pink); color: var(--text-inverse); }
+.bg-green { background-color: var(--accent-green); color: var(--text-inverse); }
+.bg-orange { background-color: var(--accent-orange); color: var(--text-inverse); }

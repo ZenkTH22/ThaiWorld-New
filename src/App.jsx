@@ -1,26 +1,51 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Header from './components/Header';
 import NewsTicker from './components/NewsTicker';
 import Dashboard from './components/Dashboard';
+import { useNewsService } from './hooks/useNewsService';
 import './App.css';
 
 function App() {
-  const breakingNews = [
-    "ด่วน: ภูเขาไฟปะทุในอินโดนีเซีย ประกาศเตือนภัยสึนามิ",
-    "หุ้นเทคโนโลยีไทยพุ่งรับกระแส AI บูม",
-    "พบสัญญาณชีพใต้ซากปรักหักพังหลังแผ่นดินไหวในตะวันออกกลาง",
-    "ราคาทองคำทำสถิติสูงสุดใหม่ทะลุ 42,000 บาท",
-    "ผู้นำ G7 เตรียมประชุมนัดพิเศษถกปัญหาโลกร้อน"
-  ];
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('ทั้งหมด');
+  
+  const { thaiNews, globalNews, loading, lastUpdated, refresh } = useNewsService();
+
+  // Get top 5 breaking news for the ticker (mixing Thai and Global)
+  const breakingNews = [...thaiNews.slice(0, 3), ...globalNews.slice(0, 2)]
+    .map(news => news.title)
+    .filter(Boolean);
+
+  // If no data yet, provide fallbacks
+  const tickerItems = breakingNews.length > 0 
+    ? breakingNews 
+    : ["กำลังโหลดข่าวสารล่าสุด...", "โปรดรอสักครู่..."];
 
   return (
     <div className="app-container">
       <div className="ambient-background"></div>
-      <Header />
-      <NewsTicker newsItems={breakingNews} />
-      <Dashboard />
+      
+      <Header 
+        searchQuery={searchQuery} 
+        setSearchQuery={setSearchQuery}
+        selectedCategory={selectedCategory}
+        setSelectedCategory={setSelectedCategory}
+      />
+      
+      <NewsTicker newsItems={tickerItems} />
+      
+      <Dashboard 
+        searchQuery={searchQuery} 
+        selectedCategory={selectedCategory}
+        thaiNews={thaiNews}
+        globalNews={globalNews}
+        loading={loading}
+        lastUpdated={lastUpdated}
+        refresh={refresh}
+      />
+      
       <footer className="app-footer">
-        <p>ข้อมูลจำลองเพื่อการนำเสนอเท่านั้น (Simulated Data for Demonstration)</p>
+        <p>ดึงข้อมูลข่าวสารจริงผ่าน RSS Feeds สาธารณะ (อัปเดตอัตโนมัติทุก 1 นาที)</p>
       </footer>
     </div>
   );
