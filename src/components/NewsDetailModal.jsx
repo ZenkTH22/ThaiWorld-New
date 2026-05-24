@@ -37,7 +37,27 @@ const NewsDetailModal = ({ news, onClose }) => {
   };
 
   const isGlobalNews = !news?.title?.match(/[\u0E00-\u0E7F]/);
-  const thumbnail = news.thumbnail || news.enclosure?.link || 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&w=800&auto=format&fit=crop';
+  // Extract thumbnail with premium fallback parsing for feeds like The Standard that embed images inside the description/content
+  let thumbnail = news.thumbnail || news.enclosure?.link;
+  
+  if (!thumbnail && news.content) {
+    const imgMatch = news.content.match(/<img[^>]+src="([^">]+)"/);
+    if (imgMatch && imgMatch[1]) {
+      thumbnail = imgMatch[1];
+    }
+  }
+  
+  if (!thumbnail && news.description) {
+    const imgMatch = news.description.match(/<img[^>]+src="([^">]+)"/);
+    if (imgMatch && imgMatch[1]) {
+      thumbnail = imgMatch[1];
+    }
+  }
+  
+  if (!thumbnail) {
+    thumbnail = 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&w=800&auto=format&fit=crop';
+  }
+  
   const categoryLabel = detectCategory(news);
 
   return createPortal(

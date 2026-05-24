@@ -2,11 +2,12 @@ import { useState, useEffect } from 'react';
 
 const RSS_FEEDS = {
   thailand: [
-    'https://rssfeeds.sanook.com/rss/feature/news/',
-    'https://www.thairath.co.th/rss/news'
+    'https://www.thairath.co.th/rss/news',
+    'https://thestandard.co/feed/',
+    'https://www.prachachat.net/feed/'
   ],
   global: [
-    'http://feeds.bbci.co.uk/news/world/rss.xml',
+    'https://feeds.bbci.co.uk/news/world/rss.xml',
     'https://rss.nytimes.com/services/xml/rss/nyt/World.xml'
   ]
 };
@@ -19,8 +20,13 @@ export const useNewsService = () => {
 
   const fetchRss = async (url) => {
     try {
-      // Use rss2json as a free proxy to bypass CORS and parse XML
-      const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}`);
+      // Append a cache-busting timestamp to both the RSS URL itself and the rss2json API call.
+      // This forces rss2json to bypass its aggressive 1-hour caching and fetch real-time updates.
+      const timestamp = Date.now();
+      const separator = url.includes('?') ? '&' : '?';
+      const cleanUrl = `${url}${separator}t=${timestamp}`;
+      
+      const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(cleanUrl)}&_t=${timestamp}`);
       const data = await res.json();
       return data.items || [];
     } catch (e) {
