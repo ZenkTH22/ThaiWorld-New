@@ -12,7 +12,11 @@ const NewsDetailModal = ({ news, onClose }) => {
   if (!news) return null;
 
   const formattedDate = formatDate(news.pubDate, {
-    dateStyle: 'full', timeStyle: 'short'
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
   });
 
   const handleTranslate = async () => {
@@ -26,7 +30,9 @@ const NewsDetailModal = ({ news, onClose }) => {
     setIsTranslating(false);
   };
 
-  const isGlobalNews = !news.title.match(/[\u0E00-\u0E7F]/); // Check if title has no Thai characters
+  const isGlobalNews = !news?.title?.match(/[\u0E00-\u0E7F]/); // Check if title has no Thai characters
+  
+  const thumbnail = news.thumbnail || news.enclosure?.link || 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&w=800&auto=format&fit=crop';
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -59,9 +65,7 @@ const NewsDetailModal = ({ news, onClose }) => {
             <span className="modal-author">โดย: {news.author || news.source || 'ไม่ระบุผู้เขียน'}</span>
           </div>
           
-          {news.thumbnail && (
-            <img src={news.thumbnail} alt={news.title} className="modal-image" />
-          )}
+          <img src={thumbnail} alt={news.title} className="modal-image" loading="lazy" />
           
           <div 
             className="modal-text" 
