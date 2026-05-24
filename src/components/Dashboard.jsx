@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import NewsCard from './NewsCard';
 import NewsDetailModal from './NewsDetailModal';
-import { useNewsService } from '../hooks/useNewsService';
+import { detectCategory } from '../utils/categoryHelper';
 import './Dashboard.css';
 
 const Dashboard = ({ searchQuery, selectedCategory, thaiNews, globalNews, loading, lastUpdated, refresh }) => {
@@ -13,9 +13,9 @@ const Dashboard = ({ searchQuery, selectedCategory, thaiNews, globalNews, loadin
       const matchesSearch = news.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
                             (news.description && news.description.toLowerCase().includes(searchQuery.toLowerCase()));
       
-      // Filter by Category
-      const matchesCategory = selectedCategory === 'ทั้งหมด' || 
-                              (news.categories && news.categories.some(cat => cat.toLowerCase().includes(selectedCategory.toLowerCase())));
+      // Filter by Category using smart detection
+      const newsCat = detectCategory(news);
+      const matchesCategory = selectedCategory === 'ทั้งหมด' || newsCat === selectedCategory;
                               
       return matchesSearch && matchesCategory;
     });

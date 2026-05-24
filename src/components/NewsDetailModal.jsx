@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { X, ExternalLink, Calendar, Languages, Loader } from 'lucide-react';
 import { translateText } from '../utils/translator';
 import { formatDate } from '../utils/dateFormatter';
+import { detectCategory } from '../utils/categoryHelper';
 import './NewsDetailModal.css';
 
 const NewsDetailModal = ({ news, onClose }) => {
@@ -33,6 +34,8 @@ const NewsDetailModal = ({ news, onClose }) => {
   const isGlobalNews = !news?.title?.match(/[\u0E00-\u0E7F]/); // Check if title has no Thai characters
   
   const thumbnail = news.thumbnail || news.enclosure?.link || 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&w=800&auto=format&fit=crop';
+  
+  const categoryLabel = detectCategory(news);
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -44,7 +47,7 @@ const NewsDetailModal = ({ news, onClose }) => {
         <div className="modal-body">
           <div className="modal-header-top">
             <span className="modal-category text-cyan">
-              {news.categories?.[0] || 'ข่าวทั่วไป'}
+              {categoryLabel}
             </span>
             {isGlobalNews && !translatedTitle && (
               <button 

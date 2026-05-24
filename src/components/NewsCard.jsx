@@ -1,6 +1,7 @@
 import React from 'react';
 import { Calendar } from 'lucide-react';
 import { formatDate } from '../utils/dateFormatter';
+import { detectCategory } from '../utils/categoryHelper';
 import './NewsCard.css';
 
 const NewsCard = ({ news, onClick }) => {
@@ -17,7 +18,9 @@ const NewsCard = ({ news, onClick }) => {
   });
 
   // Fallback image if news doesn't provide one
-  const thumbnail = news.thumbnail || 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&w=800&auto=format&fit=crop';
+  const thumbnail = news.thumbnail || news.enclosure?.link || 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&w=800&auto=format&fit=crop';
+  
+  const categoryLabel = detectCategory(news);
 
   return (
     <div className="news-card glass-panel" onClick={onClick}>
@@ -27,7 +30,7 @@ const NewsCard = ({ news, onClick }) => {
       <div className="news-card-content">
         <div className="news-card-header">
           <span className="news-category text-cyan">
-            {news.categories?.[0] || 'ข่าวทั่วไป'}
+            {categoryLabel}
           </span>
           <span className="news-time">
             <Calendar size={12} /> {formattedDate}
