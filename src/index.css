@@ -28,24 +28,24 @@
 }
 
 [data-theme='light'] {
-  --bg-main: #f5f7fa;
-  --bg-card: rgba(255, 255, 255, 0.7);
-  --bg-card-hover: rgba(255, 255, 255, 0.95);
+  --bg-main: #f0f2f5;
+  --bg-card: rgba(255, 255, 255, 0.85);
+  --bg-card-hover: rgba(255, 255, 255, 1);
   --bg-input: rgba(0, 0, 0, 0.05);
-  --bg-modal: rgba(255, 255, 255, 0.95);
+  --bg-modal: rgba(255, 255, 255, 0.98);
   
-  --text-primary: #1a1c29;
-  --text-secondary: #5a627d;
+  --text-primary: #0f1419;
+  --text-secondary: #536471;
   --text-inverse: #ffffff;
   
-  --glass-border: rgba(0, 0, 0, 0.08);
-  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05);
+  --glass-border: rgba(0, 0, 0, 0.1);
+  --glass-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.08);
   
-  --accent-cyan: #0088ff;
-  --accent-purple: #6a0dad;
-  --accent-pink: #e60073;
-  --accent-green: #00b359;
-  --accent-orange: #ff5500;
+  --accent-cyan: #0070f3;
+  --accent-purple: #7928ca;
+  --accent-pink: #ff0080;
+  --accent-green: #0070f3;
+  --accent-orange: #f5a623;
 }
 
 * {

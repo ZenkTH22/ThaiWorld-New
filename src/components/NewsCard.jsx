@@ -1,26 +1,35 @@
 import React from 'react';
-import { Clock } from 'lucide-react';
+import { Calendar } from 'lucide-react';
 import './NewsCard.css';
 
 const NewsCard = ({ news, onClick }) => {
   // Use regex to strip HTML tags for a clean summary
   const summary = news.description ? news.description.replace(/<[^>]+>/g, '').substring(0, 120) + '...' : '';
-  const timeAgo = Math.max(1, Math.floor((new Date() - new Date(news.pubDate)) / 60000));
+  
+  // Format precise date and time
+  const formattedDate = new Date(news.pubDate).toLocaleString('th-TH', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+
+  // Fallback image if news doesn't provide one
+  const thumbnail = news.thumbnail || 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&w=800&auto=format&fit=crop';
 
   return (
     <div className="news-card glass-panel" onClick={onClick}>
-      {news.thumbnail && (
-        <div className="news-card-image">
-          <img src={news.thumbnail} alt={news.title} />
-        </div>
-      )}
+      <div className="news-card-image">
+        <img src={thumbnail} alt={news.title} loading="lazy" />
+      </div>
       <div className="news-card-content">
         <div className="news-card-header">
           <span className="news-category text-cyan">
             {news.categories?.[0] || 'ข่าวทั่วไป'}
           </span>
           <span className="news-time">
-            <Clock size={14} /> {timeAgo} นาทีที่แล้ว
+            <Calendar size={12} /> {formattedDate}
           </span>
         </div>
         
