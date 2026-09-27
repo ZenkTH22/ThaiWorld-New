@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
+import DOMPurify from 'dompurify';
 import { X, ExternalLink, Calendar, Languages, Loader2, User, ArrowRight } from 'lucide-react';
 import { translateText } from '../utils/translator';
 import { formatDate } from '../utils/dateFormatter';
@@ -60,6 +61,12 @@ const NewsDetailModal = ({ news, onClose }) => {
   
   const categoryLabel = detectCategory(news);
 
+  // เนื้อหามาจาก RSS ของเว็บอื่น (และจากตัวแปลภาษา) — กรองสคริปต์/event handler ก่อนแสดงเสมอ
+  const articleHtml = DOMPurify.sanitize(translatedContent || news.content || news.description || '', {
+    FORBID_TAGS: ['style', 'form', 'input', 'button', 'iframe'],
+  });
+  const safeLink = /^https?:\/\//i.test(news.link || '') ? news.link : null;
+
   return createPortal(
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={e => e.stopPropagation()}>
@@ -109,16 +116,18 @@ const NewsDetailModal = ({ news, onClose }) => {
           {/* Content */}
           <div 
             className="modal-article" 
-            dangerouslySetInnerHTML={{ __html: translatedContent || news.content || news.description }} 
+            dangerouslySetInnerHTML={{ __html: articleHtml }}
           />
 
           <div className="modal-notice">
             ⚠️ เนื้อหาด้านบนเป็นเพียงบทสรุปเบื้องต้น คลิกลิงก์ด้านล่างเพื่ออ่านฉบับเต็ม
           </div>
-          
-          <a href={news.link} target="_blank" rel="noopener noreferrer" className="modal-cta">
-            อ่านข่าวฉบับเต็ม <ArrowRight size={16} />
-          </a>
+
+          {safeLink && (
+            <a href={safeLink} target="_blank" rel="noopener noreferrer" className="modal-cta">
+              อ่านข่าวฉบับเต็ม <ArrowRight size={16} />
+            </a>
+          )}
         </div>
       </div>
     </div>,

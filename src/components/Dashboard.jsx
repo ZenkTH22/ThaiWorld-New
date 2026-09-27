@@ -6,7 +6,7 @@ import { detectCategory } from '../utils/categoryHelper';
 import { RefreshCw, TrendingUp, Globe2, Newspaper } from 'lucide-react';
 import './Dashboard.css';
 
-const Dashboard = ({ searchQuery, selectedCategory, thaiNews, globalNews, loading, lastUpdated, refresh }) => {
+const Dashboard = ({ searchQuery, selectedCategory, thaiNews, globalNews, loading, error, lastUpdated, refresh }) => {
   const [selectedNews, setSelectedNews] = useState(null);
 
   const filterNews = (newsList) => {
@@ -50,6 +50,10 @@ const Dashboard = ({ searchQuery, selectedCategory, thaiNews, globalNews, loadin
           </button>
         </div>
       </div>
+
+      {error && (
+        <div className="news-error" role="alert">⚠️ {error}</div>
+      )}
 
       {/* ═══ News Columns ═══ */}
       <div className="dashboard-columns">

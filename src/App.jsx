@@ -10,7 +10,7 @@ function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('ทั้งหมด');
   
-  const { thaiNews, globalNews, loading, lastUpdated, refresh } = useNewsService();
+  const { thaiNews, globalNews, loading, error, lastUpdated, refresh } = useNewsService();
 
   // Initialize anti-scraping protection
   useEffect(() => {
@@ -46,6 +46,7 @@ function App() {
         thaiNews={thaiNews}
         globalNews={globalNews}
         loading={loading}
+        error={error}
         lastUpdated={lastUpdated}
         refresh={refresh}
       />
@@ -53,7 +54,7 @@ function App() {
       <footer className="app-footer">
         <p>
           <span className="live-dot"></span>
-          ดึงข้อมูลข่าวสารจริงผ่าน RSS Feeds สาธารณะ — อัปเดตอัตโนมัติทุก 1 นาที
+          ดึงข้อมูลข่าวสารจริงผ่าน RSS Feeds สาธารณะ — อัปเดตอัตโนมัติทุก 5 นาที
         </p>
         <p style={{marginTop: '8px', fontSize: '11px'}}>🛡️ Protected by Anti-Scrape System v2.0</p>
       </footer>

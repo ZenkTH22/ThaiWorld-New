@@ -1,67 +1,63 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { RSS_FEEDS } from '../config/feeds';
+import { parseDate } from '../utils/dateFormatter';
 
-const RSS_FEEDS = {
-  thailand: [
-    'https://www.thairath.co.th/rss/news',
-    'https://thestandard.co/feed/',
-    'https://www.prachachat.net/feed/'
-  ],
-  global: [
-    'https://feeds.bbci.co.uk/news/world/rss.xml',
-    'https://rss.nytimes.com/services/xml/rss/nyt/World.xml'
-  ]
+// ข่าวมาจาก /api/news (Vercel ดึงฝั่งเซิร์ฟเวอร์ + CDN แคช 5 นาที ผู้ชมทุกคนใช้ผลเดียวกัน)
+// อัปเดตถี่กว่า 5 นาทีไม่ได้ข่าวใหม่ขึ้น เพราะเซิร์ฟเวอร์แคชไว้
+const REFRESH_MS = 5 * 60 * 1000;
+
+const byNewest = (a, b) => (parseDate(b.pubDate)?.getTime() || 0) - (parseDate(a.pubDate)?.getTime() || 0);
+
+// สำรองเมื่อ /api/news ใช้ไม่ได้ (เช่นตอนรัน `npm run dev` ในเครื่อง): ดึงผ่าน rss2json ตรง โดยไม่ทำลายแคชของเขา
+const fetchRss2json = async (url) => {
+  const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}`);
+  const data = await res.json();
+  return data.status === 'ok' ? data.items || [] : [];
+};
+const fetchFallback = async () => {
+  const group = async (urls) => (await Promise.allSettled(urls.map(fetchRss2json)))
+    .flatMap((r) => (r.status === 'fulfilled' ? r.value : [])).sort(byNewest);
+  const [thailand, global] = await Promise.all([group(RSS_FEEDS.thailand), group(RSS_FEEDS.global)]);
+  if (!thailand.length && !global.length) throw new Error('fallback empty');
+  return { thailand, global };
 };
 
 export const useNewsService = () => {
   const [thaiNews, setThaiNews] = useState([]);
   const [globalNews, setGlobalNews] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [lastUpdated, setLastUpdated] = useState(new Date());
 
-  const fetchRss = async (url) => {
-    try {
-      // Append a cache-busting timestamp to both the RSS URL itself and the rss2json API call.
-      // This forces rss2json to bypass its aggressive 1-hour caching and fetch real-time updates.
-      const timestamp = Date.now();
-      const separator = url.includes('?') ? '&' : '?';
-      const cleanUrl = `${url}${separator}t=${timestamp}`;
-      
-      const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(cleanUrl)}&_t=${timestamp}`);
-      const data = await res.json();
-      return data.items || [];
-    } catch (e) {
-      console.error('Failed to fetch RSS:', url, e);
-      return [];
-    }
-  };
-
-  const loadNews = async () => {
+  const loadNews = useCallback(async () => {
     setLoading(true);
-    
-    // Fetch Thailand News
-    const thResults = await Promise.all(RSS_FEEDS.thailand.map(fetchRss));
-    const mergedTh = thResults.flat().sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
-    
-    // Fetch Global News
-    const glResults = await Promise.all(RSS_FEEDS.global.map(fetchRss));
-    const mergedGl = glResults.flat().sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
-
-    setThaiNews(mergedTh);
-    setGlobalNews(mergedGl);
-    setLastUpdated(new Date());
+    try {
+      let data;
+      try {
+        const res = await fetch('/api/news');
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        data = await res.json();
+      } catch (apiErr) {
+        console.warn('/api/news ใช้ไม่ได้ — ใช้ rss2json แทน:', apiErr);
+        data = await fetchFallback();
+      }
+      setThaiNews([...data.thailand].sort(byNewest));
+      setGlobalNews([...data.global].sort(byNewest));
+      setLastUpdated(data.updated ? new Date(data.updated) : new Date());
+      setError(null);
+    } catch (e) {
+      // โหลดไม่ได้: เก็บข่าวชุดเดิมไว้ ไม่ล้างหน้าจอ แล้วแจ้งผู้ใช้
+      console.error('Failed to load news:', e);
+      setError('โหลดข่าวไม่สำเร็จ กำลังลองใหม่อัตโนมัติ');
+    }
     setLoading(false);
-  };
+  }, []);
 
   useEffect(() => {
     loadNews();
-    
-    // Update every 1 minute
-    const interval = setInterval(() => {
-      loadNews();
-    }, 60000);
-
+    const interval = setInterval(loadNews, REFRESH_MS);
     return () => clearInterval(interval);
-  }, []);
+  }, [loadNews]);
 
-  return { thaiNews, globalNews, loading, lastUpdated, refresh: loadNews };
+  return { thaiNews, globalNews, loading, error, lastUpdated, refresh: loadNews };
 };
