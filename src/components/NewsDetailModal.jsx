@@ -1,16 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import DOMPurify from 'dompurify';
 import { X, ExternalLink, Calendar, Languages, Loader2, User, ArrowRight } from 'lucide-react';
 import { translateText } from '../utils/translator';
 import { formatDate } from '../utils/dateFormatter';
 import { detectCategory } from '../utils/categoryHelper';
+import { getThumbnail, showFallbackImage } from '../utils/newsMedia';
 import './NewsDetailModal.css';
 
 const NewsDetailModal = ({ news, onClose }) => {
   const [translatedTitle, setTranslatedTitle] = useState(null);
   const [translatedContent, setTranslatedContent] = useState(null);
   const [isTranslating, setIsTranslating] = useState(false);
+  const articleRef = useRef(null);
+
+  // รูปในเนื้อข่าวที่เว็บต้นทางไม่ให้แสดงข้ามเว็บ → ซ่อนไป แทนที่จะโชว์ไอคอนรูปแตก
+  useEffect(() => {
+    articleRef.current?.querySelectorAll('img').forEach((img) => { img.onerror = () => img.remove(); });
+  });
 
   if (!news) return null;
 
@@ -38,27 +45,8 @@ const NewsDetailModal = ({ news, onClose }) => {
   };
 
   const isGlobalNews = !news?.title?.match(/[\u0E00-\u0E7F]/);
-  // Extract thumbnail with premium fallback parsing for feeds like The Standard that embed images inside the description/content
-  let thumbnail = news.thumbnail || news.enclosure?.link;
-  
-  if (!thumbnail && news.content) {
-    const imgMatch = news.content.match(/<img[^>]+src="([^">]+)"/);
-    if (imgMatch && imgMatch[1]) {
-      thumbnail = imgMatch[1];
-    }
-  }
-  
-  if (!thumbnail && news.description) {
-    const imgMatch = news.description.match(/<img[^>]+src="([^">]+)"/);
-    if (imgMatch && imgMatch[1]) {
-      thumbnail = imgMatch[1];
-    }
-  }
-  
-  if (!thumbnail) {
-    thumbnail = 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&w=800&auto=format&fit=crop';
-  }
-  
+  const thumbnail = getThumbnail(news);
+
   const categoryLabel = detectCategory(news);
 
   // เนื้อหามาจาก RSS ของเว็บอื่น (และจากตัวแปลภาษา) — กรองสคริปต์/event handler ก่อนแสดงเสมอ
@@ -77,7 +65,7 @@ const NewsDetailModal = ({ news, onClose }) => {
 
         {/* Hero image */}
         <div className="modal-hero">
-          <img src={thumbnail} alt="" loading="lazy" draggable="false" />
+          <img src={thumbnail} alt="" loading="lazy" draggable="false" onError={showFallbackImage} />
           <div className="modal-hero-overlay"></div>
         </div>
         
@@ -116,6 +104,7 @@ const NewsDetailModal = ({ news, onClose }) => {
           {/* Content */}
           <div 
             className="modal-article" 
+            ref={articleRef}
             dangerouslySetInnerHTML={{ __html: articleHtml }}
           />
 

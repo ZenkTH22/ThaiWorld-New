@@ -2,6 +2,7 @@ import React from 'react';
 import { Calendar } from 'lucide-react';
 import { formatDate } from '../utils/dateFormatter';
 import { detectCategory } from '../utils/categoryHelper';
+import { getThumbnail, showFallbackImage, toPlainText } from '../utils/newsMedia';
 import './NewsCard.css';
 
 const CATEGORY_BADGE_MAP = {
@@ -15,7 +16,8 @@ const CATEGORY_BADGE_MAP = {
 };
 
 const NewsCard = ({ news, onClick }) => {
-  const summary = news.description ? news.description.replace(/<[^>]+>/g, '').substring(0, 100) + '...' : '';
+  const plain = toPlainText(news.description);
+  const summary = plain ? plain.substring(0, 100) + (plain.length > 100 ? '...' : '') : '';
   
   const formattedDate = formatDate(news.pubDate, {
     day: 'numeric',
@@ -25,34 +27,15 @@ const NewsCard = ({ news, onClick }) => {
     minute: '2-digit'
   });
 
-  // Extract thumbnail with premium fallback parsing for feeds like The Standard that embed images inside the description/content
-  let thumbnail = news.thumbnail || news.enclosure?.link;
-  
-  if (!thumbnail && news.content) {
-    const imgMatch = news.content.match(/<img[^>]+src="([^">]+)"/);
-    if (imgMatch && imgMatch[1]) {
-      thumbnail = imgMatch[1];
-    }
-  }
-  
-  if (!thumbnail && news.description) {
-    const imgMatch = news.description.match(/<img[^>]+src="([^">]+)"/);
-    if (imgMatch && imgMatch[1]) {
-      thumbnail = imgMatch[1];
-    }
-  }
-  
-  if (!thumbnail) {
-    thumbnail = 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&w=800&auto=format&fit=crop';
-  }
-  
+  const thumbnail = getThumbnail(news);
+
   const categoryLabel = detectCategory(news);
   const badgeClass = CATEGORY_BADGE_MAP[categoryLabel] || 'badge-cyan';
 
   return (
     <article className="news-card protected-content" onClick={onClick}>
       <div className="news-card-image">
-        <img src={thumbnail} alt="" loading="lazy" draggable="false" />
+        <img src={thumbnail} alt="" loading="lazy" draggable="false" onError={showFallbackImage} />
         <div className="card-image-overlay"></div>
         <span className={`card-badge badge ${badgeClass}`}>
           {categoryLabel}
